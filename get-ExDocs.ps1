@@ -76,7 +76,10 @@ if (-not(Test-Path $OutputDir))
 		New-Item -Path $OutputDir -ItemType Directory
 	}
 
+
+#
 # check Exchange Server oldest Version in organization
+#
 $ExchangeServers = [array](Get-ExchangeServer)
 foreach ($server in $ExchangeServers) {
 	$actual = $Server.AdminDisplayVersion.Major
@@ -91,7 +94,7 @@ foreach ($server in $ExchangeServers) {
 }
 pause
 
-Write-Host "Exchange docs processing for servers from version "$minver" to version "$maxver
+Write-Host "Exchange documentation processing for servers from version "$minver" to version "$maxver
 #
 # for Exchange Certificates on all servers must be separate loop created
 # 
