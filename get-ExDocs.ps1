@@ -62,7 +62,9 @@ $OutputDir = 'C:\Scripts\Docs\'
 # Set Basic Variables
 $allVersions = @()
 $allBuilds = @()
-$CASArrayName = ""
+
+# $CASArrayName = "CASArray" # If you have Client Access Array, set it here
+
 $minver=15
 $maxver=6
 $i=0
@@ -205,12 +207,15 @@ RunGetCommand "Get-TransportConfig" ""
 RunGetCommand "Get-TransportRule" ""
 RunGetCommand "Get-TransportRuleAction" ""
 RunGetCommand "Get-TransportRulePredicate" ""
-RunGetCommand "Get-UMAutoAttendant" ""
-RunGetCommand "Get-UMDialPlan" ""
-RunGetCommand "Get-UMHuntGroup" ""
-RunGetCommand "Get-UMIPGateway" ""
-RunGetCommand "Get-UMMailbox" ""
-RunGetCommand "Get-UMMailboxPolicy" ""
+if ($minver -le 15)
+	{ 
+		RunGetCommand "Get-UMAutoAttendant" ""
+		RunGetCommand "Get-UMDialPlan" ""
+		RunGetCommand "Get-UMHuntGroup" ""
+		RunGetCommand "Get-UMIPGateway" ""
+		RunGetCommand "Get-UMMailbox" ""
+		RunGetCommand "Get-UMMailboxPolicy" ""
+	}
 if ($minver -eq 8)
 	{ RunGetCommand "Get-UMVirtualDirectory" "" }
 RunGetCommand "Get-X400AuthoritativeDomain" ""
