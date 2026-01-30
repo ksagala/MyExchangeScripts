@@ -50,9 +50,9 @@ $Report | Sort-Object DaysLeft | Format-Table Server, Subject, Services, Expirat
 # Write-Host "Report was saved in C:\Reports\Exchange_certs.csv" -ForegroundColor Green
 
 # 3. Optional 2: Sent report via email
-# $ExpiringCerts = $Report | Where-Object { $_.DaysLeft -le $ThresholdDays }
-# if ($ExpiringCerts) {
+<# $ExpiringCerts = $Report | Where-Object { $_.DaysLeft -le $ThresholdDays }
+ if ($ExpiringCerts) {
     Send-MailMessage -To "admin@yourdomain.com" -From "exchange@yourdomain.com" `
     -Subject "ALARM: Wygasające certyfikaty Exchange" `
     -Body ($ExpiringCerts | Out-String) -SmtpServer "your.smtp.server"
-}
+}#>
