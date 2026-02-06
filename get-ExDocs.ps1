@@ -18,6 +18,8 @@
 		verified with Exchange 2016 servers, refreshed comments
 	Version 1.3
 		verified with Exchange 2019 servers, refreshed comments
+	version 1.4
+		added option to export data to json format	
 
     .DESCRIPTION
 	
@@ -28,10 +30,15 @@
     Server Name
 
     .EXAMPLE
-    Get configuration fr whole Exchange organization
+    Get configuration for whole Exchange organization
     .\get-Exdocs.ps1
 
 #>
+
+param(
+    [Parameter(Mandatory=$false)]
+    [string]$OutputPath = 'C:\Scripts\Docs\'
+)
 
 function RunGetCommand ($getCommand, $parameters){
 
