@@ -26,8 +26,10 @@
 	Script to export almost all config data from Exchange Servers. Script must be executed on existing Exchange server
 	Based on script ExDoc by MikeT52
 
-    .PARAMETER Name
-    Server Name
+    .PARAMETER OutputPath
+	Path where the documentation will be stored. Default is C:\Scripts\Docs\
+    .PARAMETER OutputFormat
+	Format of the output documentation. Valid values are 'txt' and 'json'. Default is 'txt'.
 
     .EXAMPLE
     Get configuration for whole Exchange organization
@@ -37,14 +39,21 @@
 
 param(
     [Parameter(Mandatory=$false)]
-    [string]$OutputPath = 'C:\Scripts\Docs\'
+    [string]$OutputPath = 'C:\Scripts\Docs\',
+	[Parameter(Mandatory=$false)]
+    [ValidateSet('txt','json')]
+    [string]$OutputFormat = 'txt'
 )
 
 function RunGetCommand ($getCommand, $parameters){
 
 	$filename = $OutputDir+$DateString+$getCommand
 
-	$function = $getCommand + $parameters + " | fl >> " + $filename + ".txt"
+	if ($OutputFormat -eq 'json') {
+		$function = $getCommand + $parameters + " | ConvertTo-Json | Out-File -FilePath " + $filename + ".json"
+	} else {
+		$function = $getCommand + $parameters + " | fl >> " + $filename + ".txt"
+	}
 	Invoke-Expression -Command $function
 	
 }
@@ -53,7 +62,12 @@ function RunGetCommandPipeline ($getCommand, $pipelineGetCommand, $parameters){
 
 	$filename = $OutputDir+$DateString+$getCommand
 
-	$function = $pipelineGetCommand + " | " + $getCommand + $parameters + " | fl >> " + $filename + ".txt"
+	if ($OutputFormat -eq 'json') {
+		$function = $pipelineGetCommand + " | " + $getCommand + $parameters + " | ConvertTo-Json | Out-File -FilePath " + $filename + ".json"
+	}
+	else {
+		$function = $pipelineGetCommand + " | " + $getCommand + $parameters + " | fl >> " + $filename + ".txt"
+	}
 	Invoke-Expression -Command $function
 	
 }
@@ -64,7 +78,7 @@ function RunGetCommandPipeline ($getCommand, $pipelineGetCommand, $parameters){
 
 # date formated in polish standard - could be modified
 $DateString = Get-Date -Format yyyyMMdd
-$OutputDir = 'C:\Scripts\Docs\'
+$OutputDir = $OutputPath
 
 # Set Basic Variables
 $allVersions = @()
@@ -108,11 +122,22 @@ Write-Host "Exchange documentation processing for servers from version "$minver"
 # for Exchange Certificates on all servers must be separate loop created
 # 
 #$servers = Get-ExchangeServer
-$filename = $OutputDir+$DateString+"Get-ExchangeCertificate.txt"
-foreach ($server in $ExchangeServers)
-{
-    if ($server.AdminDisplayVersion.Major -ge 8)
-        { Get-ExchangeCertificate -Server $server.Name | Format-List >> $filename }
+if ($OutputFormat -eq 'json') {
+    $filename = $OutputDir+$DateString+"Get-ExchangeCertificate.json"
+    $certificates = @()
+    foreach ($server in $ExchangeServers)
+    {
+        if ($server.AdminDisplayVersion.Major -ge 8)
+            { $certificates += Get-ExchangeCertificate -Server $server.Name }
+    }
+    $certificates | ConvertTo-Json -Depth 10 >> $filename
+} else {
+    $filename = $OutputDir+$DateString+"Get-ExchangeCertificate.txt"
+    foreach ($server in $ExchangeServers)
+    {
+        if ($server.AdminDisplayVersion.Major -ge 8)
+            { Get-ExchangeCertificate -Server $server.Name | Format-List >> $filename }
+    }
 }
 #
 # Now we are executing get-* cmdlets for all components with functions defined in the beginning of the script
@@ -234,4 +259,4 @@ if ($minver -ge 14)
 	RunGetCommand "Get-ActiveSyncDeviceAccessRule" ""
 	}
 
-Write-Host "All data are written to c:\Scripts\Docs\"
+Write-Host "All data are written to files in "$OutputDir
