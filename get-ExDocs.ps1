@@ -166,12 +166,14 @@ RunGetCommand "Get-AddressList" ""
 # RunGetCommand "Get-AddressRewriteEntry" "" # Only when using rewriting
 RunGetCommand "Get-AdSite" ""
 RunGetCommand "Get-AdSiteLink" ""
-RunGetCommandPipeline "Get-AutodiscoverVirtualDirectory" "Get-ClientAccessServer" ""
+RunGetCommandPipeline "Get-AutodiscoverVirtualDirectory" "Get-ClientAccessService" ""
 RunGetCommand "Get-AvailabilityAddressSpace" ""
 RunGetCommand "Get-AvailabilityConfig" ""
 RunGetCommand "Get-CASMailbox" "  -ResultSize Unlimited"
 RunGetCommand "Get-ClientAccessArray" ""
-RunGetCommand "Get-ClientAccessServer" ""
+# RunGetCommand "Get-ClientAccessServer" ""
+# to avoid warning on current server version replace with get-clientaccessservice
+RunGetCommand "Get-ClientAccessService" ""
 RunGetCommand "Get-ContentFilterConfig" ""
 RunGetCommand "Get-ContentFilterPhrase" ""
 RunGetCommand "Get-DetailsTemplate" ""
@@ -187,7 +189,7 @@ RunGetCommand "Get-GlobalAddressList" " -DefaultOnly"
 RunGetCommand "Get-IPAllowListConfig" ""
 RunGetCommand "Get-IPBlockListConfig" ""
 RunGetCommand "Get-JournalRule" ""
-RunGetCommandPipeline "Get-IMAPSettings" "Get-ClientAccessServer" ""
+RunGetCommandPipeline "Get-IMAPSettings" "Get-ClientAccessService" ""
 RunGetCommand "Get-Mailbox" " -ResultSize Unlimited"
 RunGetCommandPipeline "Get-MailboxDatabase" "Get-MailboxServer" ""
 if ($maxver -lt 15)
@@ -208,9 +210,9 @@ else
 RunGetCommand "Get-MailboxServer" ""
 RunGetCommand "Get-MessageClassification" ""
 RunGetCommand "Get-OfflineAddressBook" ""
-RunGetCommandPipeline "Get-POPSettings" "Get-ClientAccessServer" ""
+RunGetCommandPipeline "Get-POPSettings" "Get-ClientAccessService" ""
 RunGetCommand "Get-OrganizationConfig" ""
-RunGetCommandPipeline "Get-OutlookAnywhere" "Get-ClientAccessServer" ""
+RunGetCommandPipeline "Get-OutlookAnywhere" "Get-ClientAccessService" ""
 RunGetCommand "Get-OutlookProvider" ""
 RunGetCommand "Get-OWAMailboxPolicy" ""
 RunGetCommand "Get-ActiveSyncVirtualDirectory" ""
@@ -240,13 +242,15 @@ RunGetCommand "Get-TransportRule" ""
 RunGetCommand "Get-TransportRuleAction" ""
 RunGetCommand "Get-TransportRulePredicate" ""
 if ($minver -le 15)
-	{ 
-		RunGetCommand "Get-UMAutoAttendant" ""
-		RunGetCommand "Get-UMDialPlan" ""
-		RunGetCommand "Get-UMHuntGroup" ""
-		RunGetCommand "Get-UMIPGateway" ""
-		RunGetCommand "Get-UMMailbox" ""
-		RunGetCommand "Get-UMMailboxPolicy" ""
+	{ if (($minver -eq 15) -and ($server.AdminDisplayVersion.Minor -lt 2))
+		{
+			RunGetCommand "Get-UMAutoAttendant" ""
+			RunGetCommand "Get-UMDialPlan" ""
+			RunGetCommand "Get-UMHuntGroup" ""
+			RunGetCommand "Get-UMIPGateway" ""
+			RunGetCommand "Get-UMMailbox" ""
+			RunGetCommand "Get-UMMailboxPolicy" ""
+		}
 	}
 if ($minver -eq 8)
 	{ RunGetCommand "Get-UMVirtualDirectory" "" }
